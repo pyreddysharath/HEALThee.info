@@ -1159,17 +1159,17 @@ h2{font-size:1.18rem;color:var(--g1);margin-bottom:14px;
 
 /* ══ FOOTER: DISCLAIMER + FEEDBACK + PRIVACY + COOKIES ══ */
 .app-footer{
-  max-width: 720px; margin: 0 auto; padding: 28px 18px 40px;
+  max-width: 960px; margin: 0 auto; padding: 28px 18px 40px;
   border-top: 1px solid #e5e2da; background: #faf9f5;
 }
 .footer-tabs-row{
-  display: flex; gap: 10px; margin-bottom: 4px;
+  display: flex; justify-content: space-between; margin-bottom: 4px;
 }
 .footer-tab-btn{
   flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
-  width: 48px; height: 48px; cursor: pointer; user-select: none;
-  font-size: 1.35rem; line-height: 1;
-  background: #f2efe4; border: 1px solid #e5e0cf; border-radius: 12px;
+  width: 34px; height: 34px; cursor: pointer; user-select: none;
+  font-size: 1rem; line-height: 1;
+  background: #f2efe4; border: 1px solid #e5e0cf; border-radius: 10px;
   transition: background .15s, border-color .15s, transform .1s;
 }
 .footer-tab-btn:hover{ background: #ece7d8; }
@@ -4272,18 +4272,35 @@ function downloadBodyPDF(){
 const FEEDBACK_ENDPOINT = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 const FOOTER_SECTIONS = ['disclaimer', 'feedback', 'privacy', 'cookies'];
 
-function showFooterSection(id){
-  const alreadyActive = document.getElementById('tab-' + id).classList.contains('active');
+function closeAllFooterSections(){
   FOOTER_SECTIONS.forEach(s => {
     document.getElementById('sec-' + s).style.display = 'none';
     document.getElementById('tab-' + s).classList.remove('active');
   });
+}
+
+function showFooterSection(id){
+  const alreadyActive = document.getElementById('tab-' + id).classList.contains('active');
+  closeAllFooterSections();
   // Clicking the already-open tab again just closes it.
   if (!alreadyActive) {
     document.getElementById('sec-' + id).style.display = 'block';
     document.getElementById('tab-' + id).classList.add('active');
   }
 }
+
+// Interacting with anything else on the page (switching Body/Food tabs,
+// picking an age group, opening a yoga or exercise card, etc.) collapses
+// whichever footer section is currently open. Clicks inside the footer
+// itself are excluded, so typing in the feedback form or reading the
+// Privacy/Cookies text doesn't get interrupted. Closing this way never
+// clears the feedback inputs — the fields are just hidden, not reset —
+// so a draft name/message is still there when Feedback is reopened.
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.app-footer')) {
+    closeAllFooterSections();
+  }
+});
 
 function submitFeedback(){
   const nameEl = document.getElementById('fb-name');
